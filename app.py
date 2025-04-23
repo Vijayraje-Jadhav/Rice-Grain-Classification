@@ -1,12 +1,24 @@
 import streamlit as st
 import numpy as np
+import os
 from tensorflow.keras.models import load_model
 from PIL import Image
+import gdown
+
+# File download setup
+model_path = "model3.h5"
+file_id = "1GhA1pjQtfoGY4YduqPTZs6BrbUFolkSY"
+gdrive_url = f"https://drive.google.com/uc?id={file_id}"
+
+# Download model only if not already present
+if not os.path.exists(model_path):
+    with st.spinner("Downloading model..."):
+        gdown.download(gdrive_url, model_path, quiet=False)
 
 # Load your trained model
-model = load_model('model3.h5')
+model = load_model(model_path)
 
-# Class labels (replace these with your actual classes from val_generator.class_indices)
+# Class labels
 class_names = ['Arborio', 'Basmati', 'Ipsala', 'Jasmine', 'Karacadag']
 
 # Streamlit UI
@@ -20,7 +32,7 @@ if uploaded_file is not None:
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
     # Preprocess the image
-    img = image.resize((224, 224))  # match model input size
+    img = image.resize((224, 224))  # Adjust based on model input
     img_array = np.array(img) / 255.0
     img_array = np.expand_dims(img_array, axis=0)
 
